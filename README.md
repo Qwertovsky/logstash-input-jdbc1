@@ -1,98 +1,58 @@
-# Logstash Plugin
+# Logstash input JDBC plugin with one connection. Connection remains open between executions.
 
-[![Travis Build Status](https://travis-ci.com/logstash-plugins/logstash-input-example.svg)](https://travis-ci.com/logstash-plugins/logstash-input-example)
-
-This is a plugin for [Logstash](https://github.com/elastic/logstash).
-
-It is fully free and fully open source. The license is Apache 2.0, meaning you are pretty much free to use it however you want in whatever way.
-
-## Documentation
-
-Logstash provides infrastructure to automatically build documentation for this plugin. We provide a template file, index.asciidoc, where you can add documentation. The contents of this file will be converted into html and then placed with other plugin documentation in a [central location](http://www.elastic.co/guide/en/logstash/current/).
-
-- For formatting config examples, you can use the asciidoc `[source,json]` directive
-- For more asciidoc formatting tips, see the excellent reference here https://github.com/elastic/docs#asciidoc-guide
-
-## Need Help?
-
-Need help? Try #logstash on freenode IRC or the https://discuss.elastic.co/c/logstash discussion forum.
+Reverting https://github.com/logstash-plugins/logstash-input-jdbc/pull/237
 
 ## Developing
 
-### 1. Plugin Developement and Testing
+### 1. Plugin Development and Testing
 
 #### Code
-- To get started, you'll need JRuby with the Bundler gem installed.
+- To get started, you'll need JRuby.
 
-- Create a new plugin or clone and existing from the GitHub [logstash-plugins](https://github.com/logstash-plugins) organization. We also provide [example plugins](https://github.com/logstash-plugins?query=example).
+```sh
+export PATH=/jruby/bin:$PATH
+```
+
+- Install bundler gem
+```sh
+gem install bundler
+```
+
+- To develop a plugin you need a local clone of Logstash repository.
+```sh
+git clone --branch 8.1 --single-branch https://github.com/elastic/logstash.git
+cd logstash
+./gradlew assemble
+```
+
+- Point the plugin's environment to it
+```sh
+export LOGSTASH_PATH=/path/to/logstash/
+export LOGSTASH_SOURCE=1
+```
+- Install vendor JDBC jars
+```sh
+./gradlew vendor
+```
 
 - Install dependencies
 ```sh
 bundle install
 ```
 
-#### Test
-
-- Update your dependencies
-
-```sh
-bundle install
-```
-
 - Run tests
-
 ```sh
 bundle exec rspec
 ```
 
 ### 2. Running your unpublished Plugin in Logstash
 
-#### 2.1 Run in a local Logstash clone
-
-- Edit Logstash `Gemfile` and add the local plugin path, for example:
-```ruby
-gem "logstash-filter-awesome", :path => "/your/local/logstash-filter-awesome"
-```
-- Install plugin
-```sh
-# Logstash 2.3 and higher
-bin/logstash-plugin install --no-verify
-
-# Prior to Logstash 2.3
-bin/plugin install --no-verify
-
-```
-- Run Logstash with your plugin
-```sh
-bin/logstash -e 'filter {awesome {}}'
-```
-At this point any modifications to the plugin code will be applied to this local Logstash setup. After modifying the plugin, simply rerun Logstash.
-
-#### 2.2 Run in an installed Logstash
-
-You can use the same **2.1** method to run your plugin in an installed Logstash by editing its `Gemfile` and pointing the `:path` to your local plugin development directory or you can build the gem and install it using:
-
 - Build your plugin gem
 ```sh
-gem build logstash-filter-awesome.gemspec
+gem build logstash-integration-jdbc.gemspec
 ```
 - Install the plugin from the Logstash home
 ```sh
-# Logstash 2.3 and higher
-bin/logstash-plugin install --no-verify
-
-# Prior to Logstash 2.3
-bin/plugin install --no-verify
-
+bin/logstash-plugin install /my/logstash/plugins/logstash-integration-jdbc/logstash-integration-jdbc-0.1.0.gem
 ```
 - Start Logstash and proceed to test the plugin
-
-## Contributing
-
-All contributions are welcome: ideas, patches, documentation, bug reports, complaints, and even something you drew up on a napkin.
-
-Programming is not a required skill. Whatever you've seen about open source and maintainers or community members  saying "send patches or die" - you will not see that here.
-
-It is more important to the community that you are able to contribute.
-
-For more information about contributing, see the [CONTRIBUTING](https://github.com/elastic/logstash/blob/master/CONTRIBUTING.md) file.
